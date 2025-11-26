@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 import type { Response } from "express";
 
 export interface IUser extends Document {
@@ -14,6 +14,14 @@ export interface IUser extends Document {
   role: "user" | "admin";
   isVerified: boolean;
   refreshToken?: string;
+}
+
+export interface ISession extends Document {
+  userId: mongoose.Types.ObjectId;
+  refreshToken: string;
+  userAgent?: string;
+  ipAddress?: string;
+  expiresAt?: Date;
 }
 
 export interface AuthRequest extends Request {

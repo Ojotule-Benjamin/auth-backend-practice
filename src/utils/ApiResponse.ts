@@ -12,7 +12,7 @@ export class ApiResponse {
     return res.status(status).json({
       success: true,
       message,
-      data: data ?? null,
+      data: data ?? undefined,
     });
   }
 

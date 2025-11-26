@@ -1,23 +1,22 @@
+import { config, getApiPath, API_CONFIG } from "@/config/config";
 import express, {
   type Request,
   type Response,
   type NextFunction,
 } from "express";
-import dotenv from "dotenv";
-import { AppError } from "@/utils/AppError"; // Using absolute path with @
+import { AppError } from "@/utils/AppError";
 import { STATUS } from "@/constants/statusCodes";
 import { connectDB } from "@/config/connectDB";
 import authRoutes from "@/routes/auth.route";
 import { features } from "@/constants/index";
-import { getApiPath, API_CONFIG } from "@/config/api.config";
+import cookieParser from "cookie-parser";
 
-dotenv.config();
 const app = express();
 
 const port = process.env.PORT || 2000;
-const apiVersion = process.env.API_VERSION || "v1";
 
 app.use(express.json()); // Middleware to parse JSON bodies
+app.use(cookieParser()); // Middleware to parse cookies
 
 app.get(getApiPath("/features"), (req: Request, res: Response) => {
   return res.status(STATUS.OK).json({
@@ -38,7 +37,8 @@ app.use((error: AppError, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.listen(port, () => {
-  connectDB(process.env.DATABASE_URL || "");
-  console.log(`Server is running at http://localhost:${port}`);
-  console.log(`API: ${API_CONFIG.basePath}/${API_CONFIG.version}`);
+  connectDB(config.DATABASE_URL || "");
+  console.log(
+    `Server is running at http://localhost:${port}${API_CONFIG.basePath}/${API_CONFIG.version}`
+  );
 });

@@ -45,13 +45,11 @@ const userSchema = new mongoose.Schema<IUser>(
       type: Boolean,
       default: false,
     },
-    refreshToken: {
-      type: String,
-    },
   },
   {
     timestamps: true,
   }
 );
+
 const user = mongoose.model<IUser>("User", userSchema);
 export default user;
