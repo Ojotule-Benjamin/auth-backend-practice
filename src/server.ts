@@ -7,8 +7,8 @@ import express, {
 import { AppError } from "@/utils/AppError";
 import { STATUS } from "@/constants/statusCodes";
 import { connectDB } from "@/config/connectDB";
-import authRoutes from "@/routes/auth.route";
 import { features } from "@/constants/index";
+import authRoutes from "@/routes/auth.route";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -28,17 +28,21 @@ app.get(getApiPath("/features"), (req: Request, res: Response) => {
 app.use(getApiPath("/auth"), authRoutes);
 
 app.use((error: AppError, req: Request, res: Response, next: NextFunction) => {
-  res.status(500).json({ message: error.message });
-  res.json({
+  res.status(error.status || 500).json({
     message: error.message || "An error occurred",
     status: error.status,
-    stack: error.stack,
+    stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
   });
 });
 
-app.listen(port, () => {
-  connectDB(config.DATABASE_URL || "");
-  console.log(
-    `Server is running at http://localhost:${port}${API_CONFIG.basePath}/${API_CONFIG.version}`
-  );
-});
+// Only start the server if this file is run directly (not imported)
+if (require.main === module) {
+  app.listen(port, () => {
+    connectDB(config.DATABASE_URL || "");
+    console.log(
+      `Server is running at http://localhost:${port}${API_CONFIG.basePath}/${API_CONFIG.version}`
+    );
+  });
+}
+
+export default app;

@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema<IUser>(
 
     phoneNumber: {
       type: String,
+      unique: true,
     },
     role: {
       type: String,

@@ -76,37 +76,23 @@ export const register = async (req: Request, res: Response) => {
         isVerified: newUser.isVerified,
       },
     });
-
-    // res.status(STATUS.CREATED).json({
-    //   message: "User registered successfully",
-    //   user: {
-    //     id: newUser._id,
-    //     firstName: newUser.firstName,
-    //     lastName: newUser.lastName,
-    //     middleName: newUser.middleName ?? undefined,
-    //     email: newUser.email,
-    //     age: newUser.age,
-    //     state: newUser.state,
-    //     country: newUser.country,
-    //     phoneNumber: newUser.phoneNumber,
-    //     role: newUser.role,
-    //     isVerified: newUser.isVerified,
-    //   },
-    // });
   } catch (error: unknown) {
     let errMsg: string | object;
+
     if (error instanceof Error) {
       errMsg = error.message;
     } else {
       errMsg = error || "Unknown error";
     }
-
+    console.log("errMsg", errMsg);
     return ApiResponse.error({ res, error: errMsg });
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   const platform = req.headers["x-client-type"];
+
+  //TODO: if client-type is not available, terminate req and throw error
 
   const { email, password } = req.body;
 
