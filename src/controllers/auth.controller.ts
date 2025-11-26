@@ -298,7 +298,6 @@ export const logout = async (req: Request, res: Response) => {
       });
     }
 
-    //delete session
     await session.findOneAndDelete({ refreshToken: incomingHashedToken });
 
     //clear cookie if web client
