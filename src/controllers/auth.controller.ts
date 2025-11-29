@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
-
 import { STATUS } from "@/constants/statusCodes";
 import { ApiResponse } from "@/utils/ApiResponse";
 import {
@@ -45,15 +44,15 @@ export const register = async (req: Request, res: Response) => {
     const hashed = await bcrypt.hash(password, salt);
 
     const newUser = await user.create({
-      email: email,
-      password: hashed,
       firstName: firstName,
       lastName: lastName,
-      middleName: middleName ?? undefined,
-      age: age,
-      state: state,
-      country: country,
       phoneNumber: phoneNumber,
+      email: email,
+      password: hashed,
+      middleName: middleName ?? undefined,
+      age: age ?? undefined,
+      state: state ?? state,
+      country: country ?? country,
       role: role,
       isVerified: isVerified,
     });
@@ -66,12 +65,12 @@ export const register = async (req: Request, res: Response) => {
         id: newUser._id,
         firstName: newUser.firstName,
         lastName: newUser.lastName,
-        middleName: newUser.middleName ?? undefined,
         email: newUser.email,
-        age: newUser.age,
-        state: newUser.state,
-        country: newUser.country,
         phoneNumber: newUser.phoneNumber,
+        middleName: newUser.middleName ?? undefined,
+        age: newUser.age ?? undefined,
+        state: newUser.state ?? undefined,
+        country: newUser.country ?? undefined,
         role: newUser.role,
         isVerified: newUser.isVerified,
       },
@@ -84,7 +83,7 @@ export const register = async (req: Request, res: Response) => {
     } else {
       errMsg = error || "Unknown error";
     }
-    console.log("errMsg", errMsg);
+
     return ApiResponse.error({ res, error: errMsg });
   }
 };
@@ -92,7 +91,13 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   const platform = req.headers["x-client-type"];
 
-  //TODO: if client-type is not available, terminate req and throw error
+  if (!platform || (platform !== "web" && platform !== "mobile")) {
+    return ApiResponse.error({
+      res,
+      status: STATUS.BAD_REQUEST,
+      message: "Kindly provide the x-client-type",
+    });
+  }
 
   const { email, password } = req.body;
 
@@ -156,6 +161,7 @@ export const login = async (req: Request, res: Response) => {
 
       return ApiResponse.success({
         res,
+        status: STATUS.OK,
         message: "Login successful",
         data: {
           ...userWithoutPassword,
@@ -167,6 +173,7 @@ export const login = async (req: Request, res: Response) => {
     if (platform === "mobile") {
       return ApiResponse.success({
         res,
+        status: STATUS.OK,
         message: "Login successful",
         data: {
           ...userWithoutPassword,
@@ -176,14 +183,18 @@ export const login = async (req: Request, res: Response) => {
       });
     }
   } catch (error: unknown) {
-    let errMsg: string | object;
-    if (error instanceof Error) {
-      errMsg = error.message;
-    } else {
-      errMsg = error || "Unknown error";
-    }
+    // let errMsg: string | object;
+    // if (error instanceof Error) {
+    //   errMsg = error.message;
+    // } else {
+    //   errMsg = error || "Unknown error";
+    // }
 
-    return ApiResponse.error({ res, error: errMsg });
+    // return ApiResponse.error({ res, error: errMsg });
+    return ApiResponse.error({
+      res,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 

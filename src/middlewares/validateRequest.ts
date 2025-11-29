@@ -19,8 +19,8 @@ export const validationRequest = (
     return ApiResponse.error({
       res,
       status: STATUS.BAD_REQUEST,
-      message: "Validation Error",
-      error: formattedErrors,
+      message: formattedErrors,
+      error: undefined,
     });
   }
   next();

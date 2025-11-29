@@ -5,7 +5,6 @@ export const registerValidator = [
   body("lastName").notEmpty().withMessage("Last name is required"),
   body("email").isEmail().withMessage("Valid email is required"),
   body("phoneNumber").notEmpty().withMessage("Phone number is required"),
-  body("country").notEmpty().withMessage("Country is required"),
   body("password")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long")
